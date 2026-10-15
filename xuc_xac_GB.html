@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Xúc Xắc GB</title>
+<style>
+:root{--bg:#07111f;--panel:#0c1b2d;--line:#168de0;--gold:#ffd166;--text:#eef5ff;--muted:#a7b7cc}
+*{box-sizing:border-box}body{margin:0;padding:16px 12px;background:radial-gradient(ellipse at top,#173557,#07111f 65%);color:var(--text);font-family:system-ui,sans-serif}
+main{max-width:1050px;margin:auto}header{text-align:center;margin:8px 0 22px}h1{color:var(--gold);font-size:clamp(27px,5vw,42px);margin:0}.sub,.note{color:var(--muted);font-size:14px;line-height:1.5}
+.panel{background:linear-gradient(145deg,#0c1b2d,#071525);border:1px solid var(--line);border-radius:18px;padding:clamp(16px,3vw,26px);margin:14px 0;box-shadow:0 8px 30px #0004}
+label{display:block;color:var(--muted);font-size:14px;margin:12px 0 6px}input{width:100%;padding:15px;border-radius:12px;background:#07111f;color:var(--text);border:1px solid #168de0;font-size:18px}
+button{border:0;border-radius:12px;padding:14px 16px;font-weight:800;cursor:pointer;background:linear-gradient(#ffe6a0,#ffbf3f);color:#281a00;font-size:17px}
+.primary{width:100%;margin-top:14px}.hidden{display:none!important}.status{color:#a6e3b5;font-size:14px;margin-top:10px}.error{color:#ffb4a8}
+.game-layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,1fr);gap:14px;align-items:stretch}
+.table{min-height:520px;background:radial-gradient(ellipse at 50% 45%,#075c91,#06364f 42%,#061d31 75%);border:3px solid #d0a23e;border-radius:30px;padding:clamp(18px,4vw,38px);display:flex;flex-direction:column;justify-content:center;box-shadow:inset 0 0 40px #00aaff44,0 14px 36px #0008}
+.table-title{text-align:center;color:#d8efff;font-size:18px;font-weight:750}
+.dice{display:flex;justify-content:center;align-items:center;gap:clamp(8px,2vw,22px);margin:30px 0;min-height:150px}
+.die{width:clamp(120px,18vw,205px);height:clamp(120px,18vw,205px);display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#fff8c9 0%,#ffc94d 38%,#f08b22 100%);color:#3b1c08;border:2px solid #fff3c4;border-radius:28px;font-size:clamp(88px,13vw,155px);line-height:1;box-shadow:inset -9px -10px 16px #71869b66,inset 7px 7px 13px white,0 18px 28px #0009;transform:translateY(0) rotate(0);text-shadow:0 2px 1px #fff}.dice.rolling .die{animation:diceHop .85s cubic-bezier(.25,.8,.25,1) infinite alternate}.die:nth-child(2){background:linear-gradient(145deg,#e1fff1 0%,#4de0a0 42%,#078b72 100%);color:#062f29}.die:nth-child(3){background:linear-gradient(145deg,#ffe5f1 0%,#ff6ba6 42%,#bd2465 100%);color:#4a0928}.dice.rolling .die:nth-child(2){animation-delay:.12s}.dice.rolling .die:nth-child(3){animation-delay:.24s}@keyframes diceHop{0%{transform:translateY(0) rotate(-8deg) scale(.96)}45%{transform:translateY(-48px) rotate(18deg) scale(1.05)}100%{transform:translateY(3px) rotate(370deg) scale(1)}}
+.result{text-align:center;color:var(--gold);font-size:clamp(30px,5vw,48px);font-weight:900;margin-top:6px}.detail{text-align:center;color:#e5f3ff;font-size:18px;margin-top:7px}
+.room-badge{text-align:center;color:#bce5ff;font-size:18px;font-weight:750;margin-bottom:14px}
+.roll{width:100%;font-size:clamp(20px,3vw,25px);padding:19px;margin-top:20px;box-shadow:0 5px 0 #a56c18}.roll:disabled{opacity:.6}
+.secondary{width:100%;background:#203b59;color:white;border:1px solid #496482;margin-top:10px}
+.history{display:grid;gap:7px;margin-top:10px}.entry{display:flex;justify-content:space-between;gap:8px;background:#14253a;padding:11px;border-radius:9px;font-size:14px}.entry strong{color:var(--gold)}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.info-grid .panel{margin:0}.info-grid h3{margin-top:0}
+@media(max-width:720px){.game-layout{grid-template-columns:1fr}.table{min-height:500px}.dice{min-height:180px}.die{width:clamp(108px,29vw,160px);height:clamp(108px,29vw,160px)}.info-grid{grid-template-columns:1fr}}
+</style></head>
+<body><main>
+<header><h1>🎲 XÚC XẮC GB 🎲</h1><div class="sub">Game xúc xắc 3D · Tối đa 30 phòng</div></header>
+<section class="panel" id="joinPanel">
+<h2>📱 Vào trò chơi</h2><p class="sub">Chỉ cần nhập số điện thoại. Hệ thống xếp phòng theo thứ tự đăng nhập: người đầu tiên vào Phòng 01, tiếp theo Phòng 02… đến Phòng 30.</p>
+<label for="phone">Số điện thoại</label><input id="phone" inputmode="tel" autocomplete="tel" placeholder="Nhập số điện thoại của bạn" maxlength="20">
+<button id="join" class="primary">XÁC NHẬN VÀ VÀO PHÒNG</button><div id="joinStatus" class="status" aria-live="polite"></div>
+<p class="note">Sau khi xác nhận, phòng và số điện thoại sẽ hiện ở trang quản lý nếu hai file đang mở trong cùng trình duyệt. Muốn cập nhật qua các điện thoại khác nhau cần máy chủ dùng chung.</p>
+</section>
+<section class="hidden" id="gamePanel">
+<div class="game-layout">
+<div class="table">
+<div class="room-badge" id="roomTitle">PHÒNG 01</div>
+<div class="table-title">🎲 BÀN XÚC XẮC 🎲</div>
+<div class="dice" id="dice"><span class="die">⚀</span><span class="die">⚁</span><span class="die">⚂</span></div>
+<div class="result" id="result">Sẵn sàng lắc</div><div class="detail" id="detail">Kết quả sẽ hiển thị tại đây</div>
+<button id="roll" class="roll">🎲 LẮC XÍ NGẦU 🎲</button>
+<button id="leave" class="secondary">Thoát phòng</button>
+</div>
+<section class="panel"><h2>📋 Lịch sử phòng</h2><div class="sub" id="playerLabel"></div><div id="history" class="history"></div></section>
+</div>
+<div class="info-grid" style="margin-top:14px">
+<section class="panel"><h3>ℹ️ Quy định</h3><p class="note">• Tối đa 30 phòng.<br>• Người đăng nhập trước được xếp vào phòng có số nhỏ hơn.<br>• Chỉ cần nhập số điện thoại để vào phòng.</p></section>
+<section class="panel"><h3>🎯 Cách tính</h3><p class="note">Tổng 3 xúc xắc từ 11 trở lên là TÀI; tổng dưới 11 là XỈU. Đây là bản mô phỏng để thử giao diện.</p></section>
+</div>
+</section>
+</main>
+<script>
+(()=>{const KEY='gb_demo_v2',$=id=>document.getElementById(id);
+const initial=()=>({rooms:Array.from({length:30},(_,i)=>({id:i+1,players:[],queue:[],history:[]}))});
+const read=()=>{try{const d=JSON.parse(localStorage.getItem(KEY));return d&&Array.isArray(d.rooms)&&d.rooms.length===30?d:initial()}catch(e){return initial()}};
+const save=d=>{localStorage.setItem(KEY,JSON.stringify(d));window.dispatchEvent(new CustomEvent('gb-data-updated'))};
+let chosen=0,phone='',busy=false;
+function mask(s){return s.length<6?s:s.slice(0,3)+'••••'+s.slice(-2)}
+function renderHistory(){const d=read(),r=d.rooms[chosen-1],box=$('history');box.innerHTML='';if(!r||!r.history.length){box.textContent='Chưa có lượt chơi.';return}
+r.history.slice(0,10).forEach((h,i)=>{const e=document.createElement('div');e.className='entry';const left=document.createElement('span');left.textContent='Lượt '+(r.history.length-i)+' · '+h.vals.join(' – ')+' · Tổng '+h.sum;const side=document.createElement('strong');side.textContent=h.side;e.append(left,side);box.append(e)})}
+function enter(){phone=$('phone').value.trim();if(!/^\+?[0-9 ()-]{8,20}$/.test(phone)){$('joinStatus').textContent='Vui lòng nhập số điện thoại hợp lệ.';$('joinStatus').className='status error';return}
+const d=read();
+// Re-entry by the same phone returns to its existing room; otherwise allocate the first empty room.
+let found=0;for(const r of d.rooms){if(r.players.some(p=>p.phone===phone)){found=r.id;break}}
+if(found){chosen=found}else{const room=d.rooms.find(r=>r.players.length===0);if(!room){$('joinStatus').textContent='Đã đủ 30 phòng. Hiện không còn phòng trống.';$('joinStatus').className='status error';return}
+chosen=room.id;room.players.push({phone,joined:new Date().toLocaleString('vi-VN')});save(d)}
+$('joinPanel').classList.add('hidden');$('gamePanel').classList.remove('hidden');$('roomTitle').textContent='PHÒNG '+String(chosen).padStart(2,'0');$('playerLabel').textContent='Số điện thoại: '+mask(phone);renderHistory()}
+function randomVals(){return [1,2,3].map(()=>Math.floor(Math.random()*6)+1)}
+function dieFace(n){return ['','⚀','⚁','⚂','⚃','⚄','⚅'][n]}
+function shakeSound(){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;const ctx=new AC();const start=ctx.currentTime;for(let i=0;i<18;i++){const osc=ctx.createOscillator(),gain=ctx.createGain();osc.type='square';osc.frequency.setValueAtTime(180+Math.random()*650,start+i*.075);gain.gain.setValueAtTime(.0001,start+i*.075);gain.gain.exponentialRampToValueAtTime(.22,start+i*.075+.008);gain.gain.exponentialRampToValueAtTime(.0001,start+i*.075+.055);osc.connect(gain);gain.connect(ctx.destination);osc.start(start+i*.075);osc.stop(start+i*.075+.06)}setTimeout(()=>ctx.close(),1800)}catch(e){}}
+$('join').onclick=enter;$('phone').addEventListener('keydown',e=>{if(e.key==='Enter')enter()});
+$('roll').onclick=()=>{if(busy||!chosen)return;shakeSound();busy=true;$('roll').disabled=true;const d=read(),r=d.rooms[chosen-1];$('dice').classList.add('rolling');$('result').textContent='Đang lắc…';$('detail').textContent='';let ticks=0;const timer=setInterval(()=>{const preview=randomVals();$('dice').innerHTML=preview.map(n=>'<span class="die">'+dieFace(n)+'</span>').join('');if(++ticks>=8){clearInterval(timer);$('dice').classList.remove('rolling');const vals=randomVals(),sum=vals.reduce((a,b)=>a+b,0),side=sum>=11?'TÀI':'XỈU';r.history.unshift({phone,vals,sum,side,time:new Date().toLocaleString('vi-VN')});r.history=r.history.slice(0,100);save(d);$('dice').innerHTML=vals.map(n=>'<span class="die">'+dieFace(n)+'</span>').join('');$('result').textContent=side+' · '+sum;$('detail').textContent=vals.join(' + ')+' = '+sum;renderHistory();busy=false;$('roll').disabled=false}},110)};
+function returnToJoin(message=''){ $('gamePanel').classList.add('hidden');$('joinPanel').classList.remove('hidden');$('phone').value='';$('joinStatus').textContent=message;chosen=0;phone=''; }
+$('leave').onclick=()=>{if(chosen){const d=read(),r=d.rooms[chosen-1];if(r)r.players=r.players.filter(p=>p.phone!==phone);save(d)}returnToJoin('Đã rời phòng. Phòng hiện có thể được người khác sử dụng.');};
+window.addEventListener('storage',e=>{if(e.key===KEY&&chosen){const d=read(),r=d.rooms[chosen-1];if(!r||!r.players.some(p=>p.phone===phone))returnToJoin('Bạn đã được quản lý đưa ra khỏi phòng.');else renderHistory()}});
+
+})();
+</script></body></html>
